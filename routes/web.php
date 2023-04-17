@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
@@ -20,6 +21,8 @@ Route::get('/', [UserController::class, "showCorrectHomepage"])->name('login');
 Route::post('/register', [UserController::class, "register"])->middleware('guest');
 Route::post('/login', [UserController::class, "login"])->middleware('guest');
 Route::post('/logout', [UserController::class, "logout"])->middleware('mustBeLoggedIn');
+Route::get('/manage-avatar', [UserController::class, "showAvatarForm"])->middleware('mustBeLoggedIn');
+Route::post('/manage-avatar', [UserController::class, "storeAvatar"])->middleware('mustBeLoggedIn');
 
 // Blog post related routes
 Route::get('/create-post', [PostController::class, "showCreateForm"])->middleware('mustBeLoggedIn');
@@ -28,3 +31,8 @@ Route::get('/post/{post}', [PostController::class, "viewSinglePost"]);
 
 // Profile related routes
 Route::get('/profile/{user:username}', [UserController::class, "profile"]);
+
+// Admin relate routes
+Route::get('/admins-only', function() {
+    return "admin";
+})->middleware('can:visitAdminPages');
