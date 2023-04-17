@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 class PostController extends Controller
 {
     public function viewSinglePost(Post $post) {
+        
+        
         $ourHTML = strip_tags(Str::markdown($post->body), '<p><ul><ol><li><strong><em><h3><br>');
         
         $post['body'] = $ourHTML;
