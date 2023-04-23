@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Follow;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -22,6 +23,17 @@ class UserController extends Controller
         $imgData = Image::make($request->file('avatar'))->fit(120)->encode('jpg');
 
         Storage::put("public/avatars/{$filename}", $imgData);
+
+        $oldAvatar = $user->avatar;
+
+        $user->avatar = $filename;
+        $user->save();
+
+        if($oldAvatar != "/fallback-avatar.jpg") {
+            Storage::delete(str_replace("/storage/", "public/", $oldAvatar));
+        } 
+
+        return back()->with('success', 'Avatar saved!');
     }
 
     public function showAvatarForm() {
@@ -29,9 +41,15 @@ class UserController extends Controller
     }
 
     public function profile(User $user) {
+        $isFollowing = 0;
+
+        if(auth()->check()) {
+            $isFollowing =  Follow::where([['user_id', '=', auth()->user()->id], ['followeduser', '=', $user->id]])->count();
+        }
+
         $thePosts = $user->posts()->latest()->get();
         
-        return view('profile-posts', ['username' => $user->username, 'posts' => $thePosts, 'postCount' => $user->posts()->count()]);
+        return view('profile-posts', ['isFollowing' => $isFollowing, 'username' => $user->username, 'posts' => $thePosts, 'postCount' => $user->posts()->count()]);
     }
 
     public function register(Request $request) {
