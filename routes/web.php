@@ -33,6 +33,8 @@ Route::delete('/post/{post}', [PostController::class, "delete"]);
 
 // Profile related routes
 Route::get('/profile/{user:username}', [UserController::class, "profile"]);
+Route::get('/profile/{user:username}/following', [UserController::class, "profileFollowing"]);
+Route::get('/profile/{user:username}/followers', [UserController::class, "profileFollowers"]);
 
 // Admin relate routes
 Route::get('/admins-only', function() {

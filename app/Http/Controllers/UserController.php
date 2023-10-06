@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Follow;
 use App\Models\User;
+use App\Models\Follow;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\View;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 
@@ -40,16 +41,38 @@ class UserController extends Controller
         return view('avatar-form');
     }
 
-    public function profile(User $user) {
+    private function getSharedData(User $user) {
         $isFollowing = 0;
 
         if(auth()->check()) {
             $isFollowing =  Follow::where([['user_id', '=', auth()->user()->id], ['followeduser', '=', $user->id]])->count();
         }
 
+        View::share('sharedData', ['isFollowing' => $isFollowing, 'username' => $user->username, 'postCount' => $user->posts()->count(), 'followingCount' => $user->followingTheseUsers()->count(), 'followerCount' => $user->followers()->count()]);
+    }
+
+    public function profile(User $user) {
+        $this->getSharedData($user);
+
         $thePosts = $user->posts()->latest()->get();
         
-        return view('profile-posts', ['isFollowing' => $isFollowing, 'username' => $user->username, 'posts' => $thePosts, 'postCount' => $user->posts()->count()]);
+        return view('profile-posts', ['posts' => $thePosts]);
+    }
+
+    public function profileFollowers(User $user) {
+        $this->getSharedData($user);
+        
+        $followers = $user->followers()->latest()->get();
+        
+        return view('profile-followers', ['followers' => $followers]);
+    }
+
+    public function profileFollowing(User $user) {
+        $this->getSharedData($user);
+
+        $following = $user->followingTheseUsers()->latest()->get();
+        
+        return view('profile-following', ['followings' => $following]);
     }
 
     public function register(Request $request) {
