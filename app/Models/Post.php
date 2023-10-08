@@ -15,6 +15,8 @@ class Post extends Model
         "user_id"
     ];
 
+    // Esta funcao define a relação por FK de user e posts
+    // Podendo acessar $post->user->(algum parametro de user)
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
     }

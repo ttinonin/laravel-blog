@@ -1,7 +1,7 @@
-<x-layout>
+<x-layout :doctitle="$doctitle">
     <div class="container py-md-5 container--narrow">
         <h2>
-          <img class="avatar-small" src="{{ auth()->user()->avatar }}" /> {{ $sharedData['username'] }}
+          <img class="avatar-small" src="{{ $sharedData["avatar"] }}" /> {{ $sharedData['username'] }}
           @auth
           @if (!$sharedData["isFollowing"] && auth()->user()->username != $sharedData["username"])
           <form class="ml-2 d-inline" action="/create-follow/{{ $sharedData["username"] }}" method="POST">

@@ -48,13 +48,13 @@ class UserController extends Controller
             $isFollowing =  Follow::where([['user_id', '=', auth()->user()->id], ['followeduser', '=', $user->id]])->count();
         }
 
-        View::share('sharedData', ['isFollowing' => $isFollowing, 'username' => $user->username, 'postCount' => $user->posts()->count(), 'followingCount' => $user->followingTheseUsers()->count(), 'followerCount' => $user->followers()->count()]);
+        View::share('sharedData', ['avatar' => $user->avatar, 'isFollowing' => $isFollowing, 'username' => $user->username, 'postCount' => $user->posts()->count(), 'followingCount' => $user->followingTheseUsers()->count(), 'followerCount' => $user->followers()->count()]);
     }
 
     public function profile(User $user) {
         $this->getSharedData($user);
 
-        $thePosts = $user->posts()->latest()->get();
+        $thePosts = $user->posts()->latest()->paginate(10);
         
         return view('profile-posts', ['posts' => $thePosts]);
     }
@@ -113,7 +113,7 @@ class UserController extends Controller
             return view('homepage');
         }
 
-        return view('homepage-feed');
+        return view('homepage-feed', ['posts' => auth()->user()->feedPosts()->latest()->paginate(20)]);
     }
 
     public function logout() {
