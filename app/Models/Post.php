@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Laravel\Scout\Searchable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Post extends Model
 {
+    use Searchable;
     use HasFactory;
 
     protected $fillable = [
@@ -14,6 +16,13 @@ class Post extends Model
         "body",
         "user_id"
     ];
+
+    public function toSearchableArray() {
+        return [
+            'title' => $this->title,
+            'body' => $this->body
+        ];
+    }
 
     // Esta funcao define a relação por FK de user e posts
     // Podendo acessar $post->user->(algum parametro de user)

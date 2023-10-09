@@ -8,6 +8,16 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    public function search($term) {
+        // O driver do scout possibilita chamar toSearchableArray por search
+        // Referenciando o modelo Post
+       $posts = Post::search($term)->get();
+
+       $posts->load('user:id,username,avatar');
+
+       return $posts;
+    }
+
     public function delete(Post $post) {
         if(auth()->user()->cannot('delete', $post)) {
             return 'You cannot do that';
