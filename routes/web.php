@@ -30,9 +30,12 @@ Route::get('/create-post', [PostController::class, "showCreateForm"])->middlewar
 Route::post('/create-post', [PostController::class, "storeNewPost"])->middleware('mustBeLoggedIn');
 Route::get('/post/{post}', [PostController::class, "viewSinglePost"]);
 Route::delete('/post/{post}', [PostController::class, "delete"]);
+Route::get('/search/{term}', [PostController::class, "search"]);
 
 // Profile related routes
 Route::get('/profile/{user:username}', [UserController::class, "profile"]);
+Route::get('/profile/{user:username}/following', [UserController::class, "profileFollowing"]);
+Route::get('/profile/{user:username}/followers', [UserController::class, "profileFollowers"]);
 
 // Admin relate routes
 Route::get('/admins-only', function() {
