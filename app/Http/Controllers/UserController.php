@@ -110,6 +110,25 @@ class UserController extends Controller
         return redirect('/')->with('success', 'You are now logged in');
     }
 
+    public function loginApi(Request $request) {
+        $incomingFields = $request->validate([
+            "username" => ["required"],
+            "password" => ["required"]
+        ]);
+
+        if(auth()->attempt([
+            "username" => $incomingFields["username"],
+            "password" => $incomingFields["password"]
+        ])) {
+            $user = User::where("username", $incomingFields["username"])->first();
+            $token = $user->createToken('ourapptoken')->plainTextToken;
+
+            return $token;
+        }
+
+        return 'sorry';
+    }
+
     public function showCorrectHomepage() {
         if(!auth()->check()) {
             $postCount = Cache::remember('postCount', 20, function () {
